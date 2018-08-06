@@ -22,3 +22,37 @@ autoplot(stl(x = accounts_ts,s.window = 'periodic'))
 
 options(repr.plot.height=3,repr.plot.width=6)
 autoplot(accounts_ts)
+
+# ARIMA of accounts_ts
+
+arima<-auto.arima(accounts_ts)
+
+checkresiduals(arima)
+summary(arima)
+
+options(repr.plot.height=5,repr.plot.width=8)
+arima$arma
+
+# Examine ARIMA model fit
+
+options(repr.plot.height=3,repr.plot.width=7)
+options(scipen=5)
+
+plt_df<-df
+plt_df$fitted_accounts = fitted(arima)
+plt_df%>%head()
+
+plt_df%>%ggplot() + geom_line(mapping = aes(x=date,y=Accounts,color='actuals')) + 
+geom_line(mapping = aes(x=date,y=fitted_accounts,color ='fitted')) +
+scale_color_discrete(name = 'Type')
+
+#Future forecasting using ARIMA model
+
+pred<-forecast::forecast(object = arima,h = 18)
+pred
+
+autoplot(pred) #+theme_dark()
+
+#Export predicted values
+write.csv(pred, file = "AccountsPredicted.csv")
+
