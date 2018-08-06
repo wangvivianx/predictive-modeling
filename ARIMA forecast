@@ -1,0 +1,24 @@
+# Load libs
+
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(tidyr)
+library(forecast)
+
+# Read weekly data file
+
+df<-read.csv(file = 'DataFile.csv')
+df$date<-as.Date(df$date)
+
+df%>%tail()
+
+# Time series decomp of Accounts
+
+accounts_ts<-ts(data = df$Accounts,frequency = 12)
+autoplot(stl(x = accounts_ts,s.window = 'periodic'))
+
+# accounts_ts<-ts(df$Accounts,frequency = 12,start = c(2014,1))
+
+options(repr.plot.height=3,repr.plot.width=6)
+autoplot(accounts_ts)
